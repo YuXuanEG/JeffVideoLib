@@ -1,5 +1,7 @@
 package com.jeffmony.m3u8test;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,8 +13,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.github.florent37.runtimepermission.RuntimePermission;
+//import com.github.florent37.runtimepermission.RuntimePermission;
 import com.jeffmony.m3u8library.Constants;
 import com.jeffmony.m3u8library.VideoProcessManager;
 import com.jeffmony.m3u8library.listener.IVideoTransformListener;
@@ -31,15 +34,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        RuntimePermission.askPermission(this)
-                .request(Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .onAccepted((result -> {
-                    /**
-                     * 权限已经申请成功
-                     */
-                })).ask();
-        initViews();
+//        RuntimePermission.askPermission(this)
+//                .request(Manifest.permission.READ_EXTERNAL_STORAGE,
+//                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//                .onAccepted((result -> {
+//                    /**
+//                     * 权限已经申请成功
+//                     */
+//                })).ask();
+
+        // 权限已授予
+        // 权限被拒绝
+        ActivityResultLauncher<String[]> mPermissionResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestMultiplePermissions(),
+                result -> {
+                    if (Boolean.TRUE.equals(result.get(Manifest.permission.READ_EXTERNAL_STORAGE)) &&
+                            Boolean.TRUE.equals(result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE))) {
+                        // 权限已授予
+                        initViews();
+                    } else {
+                        // 权限被拒绝
+                        Toast.makeText(this, "需要存储权限才能正常工作", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                });
+
+        mPermissionResultLauncher.launch(new String[]{
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+        });
+
+//        initViews();
     }
 
     private void initViews() {
