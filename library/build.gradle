@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.library'
+    id 'maven-publish'
 }
 
 android {
@@ -48,6 +49,18 @@ android {
     }
 
     ndkVersion '22.1.7171670'
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                groupId = 'com.github.YuXuanEG'  // 替换为你的GitHub用户名
+                artifactId = 'JeffVideoLib'      // 库名称
+                version = '1.0.0'                // 版本号
+            }
+        }
+    }
 }
 
 dependencies {
